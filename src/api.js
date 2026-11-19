@@ -197,6 +197,24 @@ async function handleApi(request, path, ip = '') {
     const f = S.friendlyError(e);
     if (!f) { console.error(e); return json({ error: 'Server error' }, 500); }
     return json({ error: f.message }, f.status || 400);
+
+    // ROTA PARA ZERAR DADOS DE TESTE (SOMENTE ADMIN)
+add('POST', '/admin/clear-test-data', 'admin', () => {
+  const db = require('./db').getDb();
+  db.exec(`
+    DELETE FROM tickets;
+    DELETE FROM ticket_notes;
+    DELETE FROM ticket_items;
+    DELETE FROM ticket_deposits;
+    DELETE FROM ticket_time;
+    DELETE FROM invoices;
+    DELETE FROM invoice_lines;
+    DELETE FROM payments;
+    DELETE FROM customers;
+    DELETE FROM stock_moves;
+  `);
+  return { ok: true, message: 'Dados de teste limpos com sucesso!' };
+});
   }
 }
 
