@@ -20,6 +20,8 @@ export class Shop extends DurableObject {
   }
 }
 
-return env.SHOP.get(env.SHOP.idFromName('ele_tec_oficial')).fetch(request);
+export default {
+  fetch(request, env) {
+    return env.SHOP.get(env.SHOP.idFromName('ele_tec_oficial')).fetch(request);
   },
 };
