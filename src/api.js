@@ -125,22 +125,24 @@ const cookieOf = (req, name) => (req.headers.get('cookie') || '').split(';').map
 // ---- IA DE BANCADA COM GEMINI ----
 add('POST', '/ai/recommend', 'tech', async (c) => {
   const { brand, model, issue, question } = c.body || {};
- const apiKey = (c.env && c.env.GEMINI_API_KEY) || process.env.GEMINI_API_KEY;
+  const apiKey = (c.env && c.env.GEMINI_API_KEY) || process.env.GEMINI_API_KEY;
 
-  const prompt = question 
-    ? Você é um técnico especialista em bancada de eletrônicos e smartphones. Responda à dúvida técnica: 
-    : Você é um especialista em bancada de assistência técnica de celulares e eletrônicos.
-Aparelho:  
-Defeito relatado: 
+  let prompt = '';
+  if (question) {
+    prompt = 'Você é um técnico especialista em bancada de eletrônicos e smartphones. Responda à dúvida técnica: ' + question;
+  } else {
+    prompt = 'Você é um especialista em bancada de assistência técnica de celulares e eletrônicos.\n' +
+      'Aparelho: ' + (brand || '') + ' ' + (model || 'Aparelho') + '\n' +
+      'Defeito relatado: ' + (issue || 'Não especificado') + '\n\n' +
+      'Gere um diagnóstico técnico em português brasileiro com:\n' +
+      '1. 🔍 Causa mais provável\n' +
+      '2. 🛠️ Testes de bancada recomendados (ex: fonte assimétrica, multímetro, conector)\n' +
+      '3. 📦 Possíveis peças de reposição\n' +
+      '4. ⏱️ Grau de dificuldade e tempo estimado\n' +
+      'Seja direto e prático em tópicos.';
+  }
 
-Gere um diagnóstico técnico em português brasileiro com:
-1. 🔍 Causa mais provável
-2. 🛠️ Testes de bancada recomendados (ex: fonte assimétrica, multímetro, conector)
-3. 📦 Possíveis peças de reposição
-4. ⏱️ Grau de dificuldade e tempo estimado
-Seja direto e prático em tópicos.;
-
-  const geminiUrl = https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=;
+  const geminiUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key=' + apiKey;
   const res = await fetch(geminiUrl, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
