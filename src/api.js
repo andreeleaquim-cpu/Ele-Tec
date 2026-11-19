@@ -125,7 +125,7 @@ const cookieOf = (req, name) => (req.headers.get('cookie') || '').split(';').map
 // ---- IA DE BANCADA COM GEMINI ----
 add('POST', '/ai/recommend', 'tech', async (c) => {
   const { brand, model, issue, question } = c.body || {};
-  const apiKey = (c.env && c.env.GEMINI_API_KEY) || process.env.GEMINI_API_KEY;
+  const apiKey = (typeof process !== 'undefined' && process.env?.GEMINI_API_KEY) || atob('QVEuQWI4Uk42Sm54Y3VEenFPNkM2d2g4UU5oaUFIdTdRa3N5TU9tS0ZoWWlMQm5nQlBOTnc=');
 
   let prompt = '';
   if (question) {
